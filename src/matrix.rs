@@ -188,14 +188,6 @@ impl<T: Element, const R: usize, const C: usize> Mul<T> for Matrix<T, R, C> {
     }
 }
 
-/*
-impl<T: Element, const R: usize, const C: usize> From<Matrix<T, R, C>> for [[T; C]; R] {
-    fn from(matrix: Matrix<T, R, C>) -> Self {
-        matrix.els
-    }
-}
-*/
-
 impl<
     const N: usize,
     const R: usize,
@@ -215,37 +207,24 @@ impl<
     }
 }
 
-// impl<T: Element, const R: usize, const C: usize, const N: usize> From<Matrix<T, R, C>> for [T; N]
-//     where
-//         Eval<{IsMultiple::<R, C, N>::IS_MULTIPLE}> : IsTrue
-// {
-//     fn from(matrix: Matrix<T, R, C>) -> Self
-//     {
-//         assert_eq!(N, R * C, "Data size does not match matrix size");
-//         let mut data = [T::zero(); N];
-//         for i in 0..R {
-//             for j in 0..C {
-//                 data[i * C + j] = matrix[(i, j)];
-//             }
-//         }
-//         data
-//     }
-// }
-
-// impl<T: Element, U: Element, const R: usize, const C: usize> From<Matrix<T, R, C>> for Matrix<U, R, C>
-//     where
-//         TheTypes::<T, U> : AreNotSame
-// {
-//     fn from(matrix: Matrix<T, R, C>) -> Self {
-//         let mut result = Matrix::<U, R, C>::empty();
-//         for i in 0..R {
-//             for j in 0..C {
-//                 result[(i, j)] = matrix[(i, j)].into();
-//             }
-//         }
-//         result
-//     }
-// }
+impl<
+    const N: usize,
+    const R: usize,
+    const C: usize,
+    T1: Element,
+    T2: Element + From<T1>,
+> From<Matrix<T1, R, C>> for [T2; N] {
+    fn from(a: Matrix<T1, R, C>) -> Self {
+        assert_eq!(N, R * C);
+        let mut result: [T2; N] = core::array::from_fn(|_| num::zero());
+        for i in 0..R {
+            for j in 0..C {
+                result[i * C + j] = a[(i, j)].into();
+            }
+        }
+        result
+    }
+}
 
 #[cfg(test)]
 mod tests {
