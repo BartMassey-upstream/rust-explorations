@@ -188,9 +188,30 @@ impl<T: Element, const R: usize, const C: usize> Mul<T> for Matrix<T, R, C> {
     }
 }
 
+/*
 impl<T: Element, const R: usize, const C: usize> From<Matrix<T, R, C>> for [[T; C]; R] {
     fn from(matrix: Matrix<T, R, C>) -> Self {
         matrix.els
+    }
+}
+*/
+
+impl<
+    const N: usize,
+    const R: usize,
+    const C: usize,
+    T1: Element,
+    T2: Element + From<T1>,
+> From<[T1; N]> for Matrix<T2, R, C>{
+    fn from(a: [T1; N]) -> Self {
+        assert_eq!(N, R * C);
+        let mut result = Matrix::<T2, R, C>::zeros();
+        for i in 0..R {
+            for j in 0..C {
+                result[(i, j)] = a[i * C + j].into();
+            }
+        }
+        result
     }
 }
 
